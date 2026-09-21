@@ -1,6 +1,19 @@
-# Bureau d'orientation supervisé
+# مكتب التوجيه المشرف — Bureau
 
-Démo AICore Digital LLC — classement proposé, décision humaine, aucun envoi administratif.
+عرض تفاعلي (عربي / فرنسي) لمكتب توجيه **مشرف**: الأداة تقترح تصنيفاً فقط. القرار بشري. **لا إرسال إلى أي إدارة.**
 
-Pages : ouvrir `index.html` ou, si Pages est activé :
-https://elycheikhmourid1-hash.github.io/bureau-orientation/
+## التجربة
+
+1. افتح ملفاً من صندوق الوارد (B-2401 … B-2405)
+2. اضغط **اقتراح تصنيف**
+3. اعتمد / عدّل / ارفض — الأزرار معطّلة حتى الاقتراح
+4. راقب سجل التدقيق (وقت + فعل + من قرر)
+
+مثال مدمج: مذكرة حماية النشء → وزارة الاستقلالية/الشباب.
+
+## الروابط
+
+- المستودع: https://github.com/elycheikhmourid1-hash/bureau-orientation
+- GitHub Pages (بعد التفعيل من Settings → Pages → Deploy from main): https://elycheikhmourid1-hash.github.io/bureau-orientation/
+
+AICore Digital LLC — عرض تقني محدود. لا بريد إنتاج، لا عناوين مخترعة.
