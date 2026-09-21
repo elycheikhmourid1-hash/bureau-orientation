@@ -1,8 +1,6 @@
-# Bureau d'orientation supervisé — AICore Digital LLC
+# Bureau d'orientation supervisé
 
-Démo : l'outil classe et propose. L'humain valide. Aucun envoi sans ordre.
+Démo AICore Digital LLC — classement proposé, décision humaine, aucun envoi administratif.
 
-- GitHub : https://github.com/elycheikhmourid1-hash/bureau-orientation
-- Pages : https://elycheikhmourid1-hash.github.io/bureau-orientation/
-
-Richmond, Virginie. Fondateur : Ely Cheikh Mourid. aicoredigital.com
+Pages : ouvrir `index.html` ou, si Pages est activé :
+https://elycheikhmourid1-hash.github.io/bureau-orientation/
