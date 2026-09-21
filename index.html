@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Bureau d'orientation supervisé — AICore Digital</title>
+<style>
+:root{--ink:#0e1512;--paper:#f4efe4;--line:#c9bfae;--ok:#1f6b45;--wait:#8a5a12;--no:#8a1f1f;--card:#fffdf8}
+*{box-sizing:border-box}body{margin:0;font:16px/1.45 Georgia,serif;background:var(--paper);color:var(--ink)}
+header{padding:28px 24px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+header b{font-size:18px}header span{font-size:13px;opacity:.75}
+main{max-width:1100px;margin:0 auto;padding:20px 16px 64px;display:grid;grid-template-columns:1.1fr .9fr;gap:18px}
+@media(max-width:860px){main{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);padding:16px}
+h2{font-size:15px;margin:0 0 12px;letter-spacing:.04em;text-transform:uppercase}
+label{display:block;font-size:13px;margin:10px 0 4px}
+textarea,input,select{width:100%;padding:8px;border:1px solid var(--line);background:#fff;font:15px/1.4 Georgia,serif}
+textarea{min-height:140px}button{cursor:pointer;border:1px solid var(--ink);background:var(--ink);color:#fff;padding:9px 14px;font:14px Georgia,serif}
+button.ghost{background:transparent;color:var(--ink)}button:disabled{opacity:.4;cursor:not-allowed}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.pill{display:inline-block;border:1px solid var(--line);padding:2px 8px;font-size:12px;margin:2px 4px 2px 0}
+.ok{color:var(--ok)}.wait{color:var(--wait)}.no{color:var(--no)}
+ul.log{list-style:none;padding:0;margin:0;font-size:13px}ul.log li{border-bottom:1px solid var(--line);padding:8px 0}
+.banner{background:#1a241f;color:#f4efe4;padding:10px 16px;font-size:13px}
+</style>
+</head>
+<body>
+<div class="banner">Démo — processeur uniquement. Aucun message n'est envoyé à une administration. Décision humaine obligatoire.</div>
+<header>
+  <div>
+    <b>AICore Digital LLC</b><br/>
+    <span>Bureau d'orientation supervisé · Richmond / Nouakchott</span>
+  </div>
+  <div style="text-align:right;font-size:13px">
+    Outils enregistrés · journal d'audit<br/>Toute décision demeure humaine
+  </div>
+</header>
+<main>
+<section class="card">
+  <h2>1. Entrée — courrier</h2>
+  <label>Objet</label>
+  <input id="subj" value="Note — protection de la jeunesse et régulation de l'espace numérique"/>
+  <label>Texte</label>
+  <textarea id="body">Madame, Monsieur,
+
+Offre d'appui technique limité (pilote 90 jours) pour l'orientation des dossiers relatifs à la protection des mineurs en ligne. Aucune décision automatisée. Transmission au bureau compétent uniquement.</textarea>
+  <div class="row">
+    <button type="button" id="analyze">Classer (proposition seulement)</button>
+    <button type="button" class="ghost" id="reset">Effacer</button>
+  </div>
+  <p id="status" class="wait" style="margin-top:12px">En attente d'une proposition.</p>
+</section>
+<section class="card">
+  <h2>2. Proposition de l'outil</h2>
+  <div id="prop">Aucune proposition. L'outil n'agit pas seul.</div>
+</section>
+<section class="card">
+  <h2>3. Décision humaine</h2>
+  <p>Sans l'une de ces actions, rien ne sort.</p>
+  <div class="row">
+    <button type="button" id="approve" disabled>Approuver le classement</button>
+    <button type="button" class="ghost" id="edit" disabled>Modifier puis approuver</button>
+    <button type="button" class="ghost" id="reject" disabled>Rejeter</button>
+  </div>
+  <label>Annotation du responsable</label>
+  <input id="note" placeholder="Ex. Transmettre au secrétariat central — pas d'envoi externe."/>
+</section>
+<section class="card">
+  <h2>4. Journal d'audit</h2>
+  <ul class="log" id="log"></ul>
+</section>
+</main>
+<script>
+const DEST = [
+  {k:['jeunesse','mineur','protection','espace numérique','régulation'], dest:'Ministère de l\'Autonomisation, de l\'emploi, de la Jeunesse et des Sports', prio:'haute', theme:'Protection des mineurs / espace numérique'},
+  {k:['wardip','consultant','marché','avis'], dest:'WARDIP / MTNIMA — services intellectuels', prio:'moyenne', theme:'Prestations intellectuelles'},
+  {k:['kitab','courrier','orientation','transformation numérique'], dest:'MTNIMA — Secrétariat central', prio:'haute', theme:'Orientation administrative'},
+  {k:['banque','procédure','conformité'], dest:'Établissement bancaire — contrôle interne (non envoyé)', prio:'moyenne', theme:'Procédures internes'}
+];
+const logEl = document.getElementById('log');
+function stamp(){return new Date().toISOString().replace('T',' ').slice(0,19)+' UTC'}
+function addLog(msg, cls){
+  const li=document.createElement('li');
+  li.innerHTML='<span class="'+cls+'">'+stamp()+'</span> — '+msg;
+  logEl.prepend(li);
+}
+let proposal=null;
+function setBtns(on){
+  ['approve','edit','reject'].forEach(id=>document.getElementById(id).disabled=!on);
+}
+function classify(text){
+  const t=text.toLowerCase();
+  for(const r of DEST){ if(r.k.some(k=>t.includes(k))) return r; }
+  return {dest:'Bureau d\'ordre — à qualifier par l\'humain', prio:'basse', theme:'Non classé'};
+}
+document.getElementById('analyze').onclick=()=>{
+  const text=(document.getElementById('subj').value+' '+document.getElementById('body').value);
+  const r=classify(text);
+  proposal={...r, draft:'Proposition de classement uniquement. Aucun envoi externe n\'est autorisé par cet outil.'};
+  document.getElementById('prop').innerHTML=
+    '<span class="pill">thème : '+r.theme+'</span>'+
+    '<span class="pill">priorité : '+r.prio+'</span>'+
+    '<p><b>Destination proposée</b><br/>'+r.dest+'</p>'+
+    '<p><b>Règle</b><br/>'+proposal.draft+'</p>'+
+    '<p class="no">L\'outil n\'envoie pas. Il n\'invente pas d\'adresse. Il n\'agit pas sans ordre.</p>';
+  document.getElementById('status').textContent='Proposition prête — en attente du responsable.';
+  document.getElementById('status').className='wait';
+  setBtns(true);
+  addLog('Proposition émise : '+r.dest+' (aucune action externe).','wait');
+};
+document.getElementById('approve').onclick=()=>{
+  if(!proposal)return;
+  const n=document.getElementById('note').value.trim()||'sans annotation';
+  addLog('APPROUVÉ par le responsable — '+proposal.dest+' — '+n,'ok');
+  document.getElementById('status').textContent='Classement approuvé. Toujours aucun envoi automatique.';
+  document.getElementById('status').className='ok';
+  setBtns(false);
+};
+document.getElementById('edit').onclick=()=>{
+  if(!proposal)return;
+  const alt=prompt('Corriger la destination proposée :', proposal.dest);
+  if(!alt)return;
+  proposal.dest=alt;
+  addLog('MODIFIÉ puis approuvé — destination humaine : '+alt,'ok');
+  document.getElementById('status').textContent='Version humaine enregistrée.';
+  document.getElementById('status').className='ok';
+  setBtns(false);
+};
+document.getElementById('reject').onclick=()=>{
+  addLog('REJETÉ par le responsable — proposition annulée.','no');
+  document.getElementById('status').textContent='Rejeté. Rien n\'a quitté le bureau.';
+  document.getElementById('status').className='no';
+  setBtns(false); proposal=null;
+};
+document.getElementById('reset').onclick=()=>{
+  proposal=null; setBtns(false);
+  document.getElementById('prop').textContent='Aucune proposition. L\'outil n\'agit pas seul.';
+  document.getElementById('status').textContent='En attente d\'une proposition.';
+  document.getElementById('status').className='wait';
+  addLog('Session réinitialisée.','wait');
+};
+addLog('Bureau ouvert — mode démonstration.','ok');
+</script>
+</body>
+</html>
